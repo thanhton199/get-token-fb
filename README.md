@@ -1,1 +1,1 @@
-# get-token-facebook
+# get-token-facebook-no-checkpoint
