@@ -1,4 +1,5 @@
 <?php
+<!--- code by Ken 1199 ---!>
 function sign_creator(&$data_login){
 $sig = '';
   foreach($data_login as $key => $value){
