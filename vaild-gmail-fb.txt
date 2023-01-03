@@ -1,0 +1,41 @@
+<?php
+error_reporting(0);
+echo "Nhập File Chứa List Mail : ";
+$file=trim(fgets(STDIN));
+echo "Nhập File Lưu Mail Chưa Tạo : ";
+$file_chua_tao=trim(fgets(STDIN));
+echo "Nhập File Lưu Mail Đã Tạo : ";
+$file_da_tao=trim(fgets(STDIN));
+$data   = fread(fopen($file , "r"), filesize($file));
+$data=explode(PHP_EOL,$data);
+foreach($data as $mail){
+    $mail=trim(preg_replace('/\s+/',' ', $mail));
+    $data="email=".$mail;
+    $url_view="https://melink.vn/checkmail/checkemail.php";
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => $url_view,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_CUSTOMREQUEST => 'POST',
+        CURLOPT_POSTFIELDS =>$data,
+        CURLOPT_HTTPHEADER => array(
+            'Host:melink.vn',
+            'X-Requested-With:XMLHttpRequest'
+        ),
+        ));
+    $response = curl_exec($curl);
+    curl_close($curl);
+    if(explode(">Valid!", $response)[1]){
+        echo $mail." | Đã Tạo\n";
+        $fh = fopen($file_da_tao, 'a');
+        fwrite($fh, $mail."\n");
+        fclose($fh);
+    }else{
+        echo $mail." | Chưa Tạo\n";
+        $fh = fopen($file_chua_tao, 'a');
+        fwrite($fh, $mail."\n");
+        fclose($fh);
+    }
+    }
+echo "Mail Đã Tạo Đã Lưu Thành Công Vào File ".$file_da_tao."\n";
+echo "Mail Chưa Tạo Đã Lưu Thành Công Vào File ".$file_chua_tao."\n";
